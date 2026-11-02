@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/sword_arc.gd" id="1_sword"]
+
+[sub_resource type="StandardMaterial3D" id="mat_sword"]
+albedo_color = Color(0, 1, 1, 1)
+emission_enabled = true
+emission = Color(0.2, 0.8, 1, 1)
+emission_energy_multiplier = 4.0
+transparency = 1
+
+[sub_resource type="CylinderMesh" id="mesh_sword"]
+top_radius = 2.0
+bottom_radius = 2.0
+height = 0.1
+radial_segments = 16
+rings = 1
+
+[sub_resource type="CylinderShape3D" id="shape_sword"]
+radius = 2.0
+height = 0.5
+
+[node name="SwordArc" type="Area3D"]
+collision_layer = 16
+collision_mask = 12
+script = ExtResource("1_sword")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("mesh_sword")
+surface_material_override/0 = SubResource("mat_sword")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+shape = SubResource("shape_sword")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

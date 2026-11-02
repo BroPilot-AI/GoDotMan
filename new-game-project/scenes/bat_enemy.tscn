@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/bat_enemy.gd" id="1_bat"]
+[ext_resource type="PackedScene" path="res://addons/gdquest_round_bat/round_bat_skin.tscn" id="2_skin"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_bat"]
+radius = 1.0
+
+[node name="BatEnemy" type="Area3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_bat")
+
+[node name="RoundBatSkin" parent="." instance=ExtResource("2_skin")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("SphereShape3D_bat")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

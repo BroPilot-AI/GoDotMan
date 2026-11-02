@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/beetle_enemy.gd" id="1_beetle"]
+[ext_resource type="PackedScene" path="res://addons/gdquest_beetle_bot/beetlebot_skin.tscn" id="2_beetlebot"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+radius = 0.35
+height = 0.9
+
+[node name="BeetleEnemy" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_beetle")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("CapsuleShape3D_1")
+
+[node name="BeetleBotSkin" parent="." instance=ExtResource("2_beetlebot")]
+
+[node name="RayFront" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.5)
+target_position = Vector3(0, 0, -0.5)
+collision_mask = 1
+
+[node name="RayGround" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -0.6)
+target_position = Vector3(0, -0.5, 0)
+collision_mask = 1

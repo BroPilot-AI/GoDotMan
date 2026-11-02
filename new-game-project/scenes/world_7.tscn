@@ -1,0 +1,562 @@
+[gd_scene load_steps=29 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/beetle_enemy.tscn" id="2_beetle"]
+[ext_resource type="PackedScene" path="res://scenes/bolt_pickup.tscn" id="3_bolt"]
+[ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="4_hud"]
+[ext_resource type="Script" path="res://scripts/camera_rig.gd" id="5_cam"]
+[ext_resource type="Script" path="res://scripts/flag.gd" id="6_flag"]
+[ext_resource type="PackedScene" path="res://scenes/powerup_bolt_shot.tscn" id="7_bolt_powerup"]
+[ext_resource type="PackedScene" path="res://scenes/powerup_star.tscn" id="8_star_powerup"]
+[ext_resource type="PackedScene" path="res://scenes/bat_enemy.tscn" id="9_bat"]
+[ext_resource type="PackedScene" path="res://scenes/bee_enemy.tscn" id="10_bee"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_grass"]
+noise_type = 3
+frequency = 0.05
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture_grass"]
+seamless = true
+noise = SubResource("FastNoiseLite_grass")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_dirt"]
+noise_type = 0
+frequency = 0.02
+fractal_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture_dirt"]
+seamless = true
+noise = SubResource("FastNoiseLite_dirt")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_stone"]
+noise_type = 2
+frequency = 0.015
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture_stone"]
+seamless = true
+as_normal_map = true
+noise = SubResource("FastNoiseLite_stone")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_brick"]
+noise_type = 1
+frequency = 0.03
+fractal_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture_brick"]
+seamless = true
+as_normal_map = true
+noise = SubResource("FastNoiseLite_brick")
+
+[sub_resource type="StandardMaterial3D" id="mat_grass"]
+albedo_color = Color(0.25, 0.6, 0.15, 1)
+albedo_texture = SubResource("NoiseTexture_grass")
+uv1_scale = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="mat_dirt"]
+albedo_color = Color(0.45, 0.28, 0.12, 1)
+albedo_texture = SubResource("NoiseTexture_dirt")
+uv1_scale = Vector3(0.2, 0.2, 0.2)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="mat_stone"]
+albedo_color = Color(0.55, 0.5, 0.45, 1)
+normal_enabled = true
+normal_scale = 1.5
+normal_texture = SubResource("NoiseTexture_stone")
+uv1_scale = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="mat_brick"]
+albedo_color = Color(0.65, 0.35, 0.2, 1)
+normal_enabled = true
+normal_scale = 2.0
+normal_texture = SubResource("NoiseTexture_brick")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="mat_pipe"]
+albedo_color = Color(0.15, 0.65, 0.15, 1)
+metallic = 0.3
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="mat_question"]
+albedo_color = Color(1, 0.85, 0.1, 1)
+emission_enabled = true
+emission = Color(1, 0.85, 0.1, 1)
+emission_energy_multiplier = 0.15
+
+[sub_resource type="StandardMaterial3D" id="mat_flag_pole"]
+albedo_color = Color(0.5, 0.5, 0.5, 1)
+metallic = 0.6
+
+[sub_resource type="StandardMaterial3D" id="mat_flag"]
+albedo_color = Color(1, 0.2, 0.2, 1)
+emission_enabled = true
+emission = Color(1, 0.2, 0.2, 1)
+emission_energy_multiplier = 0.2
+
+[sub_resource type="BoxShape3D" id="flag_shape"]
+size = Vector3(1, 3, 1)
+
+[sub_resource type="BoxMesh" id="pole_mesh"]
+size = Vector3(0.1, 4, 0.1)
+material = SubResource("mat_flag_pole")
+
+[sub_resource type="BoxMesh" id="flag_mesh"]
+size = Vector3(0.05, 0.6, 1.0)
+material = SubResource("mat_flag")
+
+[sub_resource type="FogMaterial" id="mat_fog"]
+density = 2.0
+albedo = Color(0.85, 0.9, 1, 1)
+emission = Color(0.7, 0.8, 0.9, 1)
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.4, 0.75, 1, 1)
+ambient_light_source = 1
+ambient_light_color = Color(0.7, 0.75, 0.85, 1)
+ambient_light_energy = 0.5
+tonemap_mode = 2
+tonemap_exposure = 1.2
+ssao_enabled = true
+ssao_intensity = 2.5
+sdfgi_enabled = true
+glow_enabled = true
+glow_intensity = 0.5
+glow_bloom = 0.15
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.001
+volumetric_fog_albedo = Color(0.8, 0.8, 0.9, 1)
+fog_enabled = true
+fog_light_color = Color(0.8, 0.8, 0.9, 1)
+fog_density = 0.0002
+
+[node name="World1" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0.0, 10.0, 0.0)
+shadow_enabled = true
+
+[node name="CloudSea" type="FogVolume" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89.6, -4.46, 0.0)
+size = Vector3(160, 4, 30)
+shape = 3
+material = SubResource("mat_fog")
+
+; === Section 1: Safe Start ===
+[node name="GroundStart" type="StaticBody3D" parent="."]
+collision_layer = 1
+
+[node name="Grass" type="CSGBox3D" parent="GroundStart"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8, -0.703, 0.0)
+use_collision = true
+collision_layer = 1
+use_collision = true
+collision_layer = 1
+size = Vector3(36, 0.5, 8)
+material = SubResource("mat_grass")
+
+[node name="Dirt" type="CSGBox3D" parent="GroundStart"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8, -2.222, 0.0)
+size = Vector3(18, 2, 6)
+material = SubResource("mat_dirt")
+
+[node name="QuestionBlockStart" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.04, 0.601, 0.0)
+collision_layer = 1
+
+[node name="Mesh" type="CSGBox3D" parent="QuestionBlockStart"]
+use_collision = true
+collision_layer = 1
+size = Vector3(1, 1, 1)
+material = SubResource("mat_question")
+
+[node name="Label" type="Label3D" parent="QuestionBlockStart"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 0.51)
+text = "?"
+font_size = 80
+modulate = Color(0.6, 0.4, 0, 1)
+
+[node name="FirstPowerUp" parent="." instance=ExtResource("7_bolt_powerup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.04, 2.508, 0.0)
+
+; === Section 2: Pipe Valley ===
+[node name="PipeValleyFloor" type="StaticBody3D" parent="."]
+collision_layer = 1
+
+[node name="Grass" type="CSGBox3D" parent="PipeValleyFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51.2, -3.618, 0.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(30, 0.5, 8)
+material = SubResource("mat_grass")
+
+[node name="RecoveryStep1" type="CSGBox3D" parent="PipeValleyFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62.72, -2.023, 2.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(1, 1, 2)
+material = SubResource("mat_stone")
+
+[node name="RecoveryStep2" type="CSGBox3D" parent="PipeValleyFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66.56, -0.817, 2.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(2, 4, 2)
+material = SubResource("mat_stone")
+
+[node name="RecoveryStep3" type="CSGBox3D" parent="PipeValleyFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39.68, -2.672, -2.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(1, 1, 2)
+material = SubResource("mat_stone")
+
+[node name="RecoveryStep4" type="CSGBox3D" parent="PipeValleyFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.84, -0.931, -2.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(2, 4, 2)
+material = SubResource("mat_stone")
+
+[node name="Pipe1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.08, -2.192, 0.0)
+collision_layer = 1
+
+[node name="PipeBody" type="CSGCylinder3D" parent="Pipe1"]
+use_collision = true
+collision_layer = 1
+radius = 0.8
+height = 3.5
+material = SubResource("mat_pipe")
+
+[node name="PipeRim" type="CSGCylinder3D" parent="Pipe1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 1.75, 0.0)
+use_collision = true
+collision_layer = 1
+radius = 0.9
+height = 0.4
+material = SubResource("mat_pipe")
+
+[node name="Pipe2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56.32, -1.06, 0.0)
+collision_layer = 1
+
+[node name="PipeBody" type="CSGCylinder3D" parent="Pipe2"]
+use_collision = true
+collision_layer = 1
+radius = 0.8
+height = 4.5
+material = SubResource("mat_pipe")
+
+[node name="PipeRim" type="CSGCylinder3D" parent="Pipe2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 2.25, 0.0)
+use_collision = true
+collision_layer = 1
+radius = 0.9
+height = 0.4
+material = SubResource("mat_pipe")
+
+[node name="ValleyEnemy" parent="." instance=ExtResource("2_beetle")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51.2, -2.09, 0.0)
+
+[node name="ValleyBee" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51.2, 2.184, 0.0)
+
+; === Section 3: Climbing Challenge ===
+[node name="ClimbMidGround" type="StaticBody3D" parent="."]
+collision_layer = 1
+
+[node name="Grass" type="CSGBox3D" parent="ClimbMidGround"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76.8, 0.119, 0.0)
+use_collision = true
+collision_layer = 1
+use_collision = true
+collision_layer = 1
+size = Vector3(35, 0.5, 8)
+material = SubResource("mat_grass")
+
+[node name="Step1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89.6, 1.007, 0.0)
+collision_layer = 1
+
+[node name="Mesh" type="CSGBox3D" parent="Step1"]
+use_collision = true
+collision_layer = 1
+size = Vector3(2.5, 0.4, 2.5)
+material = SubResource("mat_stone")
+
+[node name="Step2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 99.84, 1.915, 0.0)
+collision_layer = 1
+
+[node name="Mesh" type="CSGBox3D" parent="Step2"]
+use_collision = true
+collision_layer = 1
+size = Vector3(2.5, 0.4, 2.5)
+material = SubResource("mat_stone")
+
+[node name="Step3StarBranch" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 99.84, 3.441, -3.0)
+collision_layer = 1
+
+[node name="Mesh" type="CSGBox3D" parent="Step3StarBranch"]
+use_collision = true
+collision_layer = 1
+size = Vector3(2.5, 0.4, 2.5)
+material = SubResource("mat_brick")
+
+[node name="StarPowerUp" parent="." instance=ExtResource("8_star_powerup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 99.84, 4.211, -3.0)
+
+[node name="ClimbEnemy1" parent="." instance=ExtResource("2_beetle")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76.8, 0.308, 0.0)
+
+[node name="ClimbEnemy2" parent="." instance=ExtResource("2_beetle")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 99.84, 2.04, 0.0)
+
+[node name="ClimbBat" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 102.4, 5.94, 0.0)
+
+[node name="GauntletBat" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 133.12, 6.73, 0.0)
+
+; === Section 4: Final Gauntlet ===
+[node name="GauntletBridge" type="StaticBody3D" parent="."]
+collision_layer = 1
+
+[node name="Mesh" type="CSGBox3D" parent="GauntletBridge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 117.76, 2.835, 0.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(10, 0.4, 2)
+material = SubResource("mat_brick")
+
+[node name="GauntletEnemy" parent="." instance=ExtResource("2_beetle")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120.32, 2.095, 0.0)
+
+[node name="FinalStairs" type="StaticBody3D" parent="."]
+collision_layer = 1
+
+[node name="Step1" type="CSGBox3D" parent="FinalStairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 133.12, 0.264, 0.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(2, 5, 2)
+material = SubResource("mat_stone")
+
+[node name="Step2" type="CSGBox3D" parent="FinalStairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 138.24, 2.188, 0.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(2, 6, 2)
+material = SubResource("mat_stone")
+
+[node name="Step3" type="CSGBox3D" parent="FinalStairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 143.36, 2.182, 0.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(2, 7, 2)
+material = SubResource("mat_stone")
+
+[node name="FinishPlatform" type="CSGBox3D" parent="FinalStairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 158.72, 3.164, 0.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(10, 8, 4)
+material = SubResource("mat_grass")
+
+; === Bolts Path ===
+[node name="Bolt1" parent="." instance=ExtResource("3_bolt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.08, 1.266, 0.0)
+
+[node name="Bolt2" parent="." instance=ExtResource("3_bolt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56.32, 2.539, 0.0)
+
+[node name="Bolt3" parent="." instance=ExtResource("3_bolt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89.6, 2.347, 0.0)
+
+[node name="Bolt4" parent="." instance=ExtResource("3_bolt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 112.64, 3.599, 0.0)
+
+[node name="Bolt5" parent="." instance=ExtResource("3_bolt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 117.76, 3.15, 0.0)
+
+[node name="Bolt6" parent="." instance=ExtResource("3_bolt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 122.88, 3.386, 0.0)
+
+; === Flag ===
+[node name="Flag" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 158.72, 5.822, 0.0)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("6_flag")
+
+[node name="Pole" type="MeshInstance3D" parent="Flag"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 2.0, 0.0)
+mesh = SubResource("pole_mesh")
+
+[node name="FlagMesh" type="MeshInstance3D" parent="Flag"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 3.5, -0.5)
+mesh = SubResource("flag_mesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flag"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 1.5, 0.0)
+shape = SubResource("flag_shape")
+
+; === Invisible Walls ===
+[node name="Walls" type="StaticBody3D" parent="."]
+collision_layer = 1
+
+[node name="MeshRight" type="CSGBox3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 179.2, 5.507, 0.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(1, 20, 10)
+visible = false
+
+[node name="MeshLeft" type="CSGBox3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 5.0, 0.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(1, 20, 10)
+visible = false
+
+[node name="MeshBack" type="CSGBox3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89.6, 5.071, -5.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(120, 20, 1)
+visible = false
+
+[node name="MeshFront" type="CSGBox3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89.6, 5.26, 5.0)
+use_collision = true
+collision_layer = 1
+size = Vector3(120, 20, 1)
+visible = false
+
+; === Player & System ===
+[node name="Player" parent="." instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 1.0, 0.0)
+
+[node name="CameraRig" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 6.0, 8.0)
+script = ExtResource("5_cam")
+target = NodePath("../Player")
+offset = Vector3(0, 5, 8)
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig"]
+
+[node name="HUD" parent="." instance=ExtResource("4_hud")]
+
+
+[node name="ProcBat0" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 61.483, 5.166, -2.911)
+
+[node name="ProcBat1" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40.054, 4.322, -0.679)
+
+[node name="ProcBat2" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 84.966, 3.512, 2.536)
+
+[node name="ProcBat3" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 93.68, 3.211, 0.463)
+
+[node name="ProcBat4" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 102.204, 7.362, 0.5)
+
+[node name="ProcBat5" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76.567, 4.438, 0.861)
+
+[node name="ProcBat6" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 109.648, 5.135, 2.785)
+
+[node name="ProcBat7" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.954, 4.141, -0.155)
+
+[node name="ProcBat8" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.723, 4.539, 2.3)
+
+[node name="ProcBat9" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33.535, 4.886, -1.934)
+
+[node name="ProcBat10" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76.713, 5.782, 2.197)
+
+[node name="ProcBat11" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 63.294, 3.472, 3.401)
+
+[node name="ProcBat12" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110.531, 6.878, -0.813)
+
+[node name="ProcBat13" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49.474, 5.067, 2.113)
+
+[node name="ProcBat14" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.635, 4.43, -0.2)
+
+[node name="ProcBat15" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.161, 5.46, 1.328)
+
+[node name="ProcBat16" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 92.396, 2.735, 3.121)
+
+[node name="ProcBat17" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56.664, 3.756, 1.462)
+
+[node name="ProcBat18" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 112.719, 7.414, -3.546)
+
+[node name="ProcBat19" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76.0, 5.738, -1.476)
+
+[node name="ProcBat20" type="Node3D" parent="." instance=ExtResource("9_bat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.088, 2.841, 2.078)
+
+[node name="ProcBee0" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.784, 5.761, -3.531)
+
+[node name="ProcBee1" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.677, 4.588, -0.847)
+
+[node name="ProcBee2" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 106.026, 3.995, 2.355)
+
+[node name="ProcBee3" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79.191, 4.771, -4.086)
+
+[node name="ProcBee4" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.616, 5.055, 4.213)
+
+[node name="ProcBee5" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88.985, 6.04, -3.312)
+
+[node name="ProcBee6" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49.374, 6.981, -3.904)
+
+[node name="ProcBee7" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45.608, 3.453, 1.664)
+
+[node name="ProcBee8" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59.427, 6.362, 1.399)
+
+[node name="ProcBee9" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 105.889, 5.958, -1.279)
+
+[node name="ProcBee10" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49.975, 5.562, -0.486)
+
+[node name="ProcBee11" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42.222, 4.369, -3.891)
+
+[node name="ProcBee12" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 101.601, 4.002, 0.667)
+
+[node name="ProcBee13" type="Node3D" parent="." instance=ExtResource("10_bee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 114.375, 4.541, -0.575)

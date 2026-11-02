@@ -1,0 +1,138 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_menu"]
+[ext_resource type="Texture2D" path="res://assets/avatars/godot-robot.png" id="godot_robot"]
+[ext_resource type="Texture2D" path="res://assets/avatars/gdbot.png" id="gdbot"]
+[ext_resource type="Texture2D" path="res://assets/avatars/sophia.png" id="sophia"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.12, 0.22, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -250.0
+offset_right = 300.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.7, 1, 1)
+theme_override_font_sizes/font_size = 64
+text = "GoDotman"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 16
+text = "A Gobot Adventure"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 30)
+
+[node name="CharSelectLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Select Character"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 40
+
+[node name="VBoxGobot" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="TexRect" type="TextureRect" parent="VBoxContainer/HBoxContainer/VBoxGobot"]
+custom_minimum_size = Vector2(180, 180)
+layout_mode = 2
+texture = ExtResource("godot_robot")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BtnGobot" type="Button" parent="VBoxContainer/HBoxContainer/VBoxGobot"]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 40)
+text = "Gobot"
+
+[node name="VBoxGDBot" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="TexRect" type="TextureRect" parent="VBoxContainer/HBoxContainer/VBoxGDBot"]
+custom_minimum_size = Vector2(180, 180)
+layout_mode = 2
+texture = ExtResource("gdbot")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BtnGDBot" type="Button" parent="VBoxContainer/HBoxContainer/VBoxGDBot"]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 40)
+text = "GDBot"
+
+[node name="VBoxSophia" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="TexRect" type="TextureRect" parent="VBoxContainer/HBoxContainer/VBoxSophia"]
+custom_minimum_size = Vector2(180, 180)
+layout_mode = 2
+texture = ExtResource("sophia")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BtnSophia" type="Button" parent="VBoxContainer/HBoxContainer/VBoxSophia"]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 40)
+text = "Sophia"
+
+
+[node name="Spacer2" type="Control" parent="VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 10)
+
+[node name="StartButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(250, 50)
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 24
+text = "START GAME"
+
+[node name="QuitButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(250, 50)
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 24
+text = "QUIT"
